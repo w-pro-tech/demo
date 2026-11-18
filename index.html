@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja Morabeza · Produtos de Cabo Verde</title>
+  <meta name="description" content="Produtos artesanais de Cabo Verde com entrega na Praia.">
+  <link rel="icon" href="assets/img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Cabeçalho (igual em todas as páginas) -->
+  <div class="barra-info">Entrega grátis na Praia em compras a partir de 5000 CVE</div>
+  <header class="cabecalho">
+    <div class="contentor">
+      <a class="logotipo" href="index.html"><img src="assets/img/logo.svg" alt="">Morabeza</a>
+      <nav class="nav">
+        <a href="index.html#produtos">Produtos</a>
+        <a class="link-carrinho" href="carrinho.html">Carrinho <span id="contador-carrinho" hidden>0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contentor">
+    <!-- Destaque: imagem grande + mensagem principal + ação -->
+    <section class="destaque" id="destaque">
+      <img src="https://images.unsplash.com/photo-1588357711802-9d2602051128?auto=format&fit=crop&w=1600&q=70" alt="Paisagem verde da ilha de Santiago, Cabo Verde" onerror="this.remove()">
+      <div class="destaque-texto">
+        <span class="etiqueta">Feito em Cabo Verde</span>
+        <h1>Sabores e artesanato das ilhas, entregues em casa</h1>
+        <p>Produtos de pequenos produtores locais, com entrega na Praia em 24 a 48 horas.</p>
+        <a class="botao claro" href="#produtos">Ver produtos ↓</a>
+      </div>
+    </section>
+
+    <!-- Vantagens: respondem às dúvidas antes de o cliente as ter -->
+    <section class="vantagens">
+      <div class="vantagem"><span>🚚</span><div><strong>Entrega rápida</strong><small>24 a 48 h na cidade da Praia</small></div></div>
+      <div class="vantagem"><span>💵</span><div><strong>Paga na entrega</strong><small>Ou levanta na loja, sem custos</small></div></div>
+      <div class="vantagem"><span>🤝</span><div><strong>Comércio justo</strong><small>Direto de produtores locais</small></div></div>
+    </section>
+
+    <!-- Catálogo -->
+    <section id="produtos">
+      <div class="cabecalho-seccao">
+        <h2>Os nossos produtos</h2>
+        <span id="contagem"></span>
+      </div>
+      <div class="ferramentas">
+        <div class="filtros" id="filtros"></div>
+        <input class="campo-pesquisa" id="pesquisa" type="search" placeholder="Pesquisar produtos…" aria-label="Pesquisar produtos">
+        <select class="ordenar" id="ordem" aria-label="Ordenar produtos">
+          <option value="destaque">Em destaque</option>
+          <option value="preco-asc">Preço: mais baixo</option>
+          <option value="preco-desc">Preço: mais alto</option>
+        </select>
+      </div>
+      <div class="grelha-produtos" id="lista-produtos"></div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="contentor">
+      <span>Loja Morabeza · Projeto de demonstração do workshop de E-commerce · UNICV</span>
+      <span>Fotografias: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></span>
+    </div>
+  </footer>
+  <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+  <!-- Scripts: a ordem importa (dados → lógica → interface) -->
+  <script src="js/produtos.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

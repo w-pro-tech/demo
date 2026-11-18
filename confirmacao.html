@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encomenda confirmada · Loja Morabeza</title>
+  <link rel="icon" href="assets/img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="cabecalho">
+    <div class="contentor">
+      <a class="logotipo" href="index.html"><img src="assets/img/logo.svg" alt="">Morabeza</a>
+      <nav class="nav">
+        <a href="index.html#produtos">Produtos</a>
+        <a class="link-carrinho" href="carrinho.html">Carrinho <span id="contador-carrinho" hidden>0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contentor">
+    <div class="passos" aria-label="Passos da compra">
+      <span class="feito"><b>✓</b> Carrinho</span><i></i>
+      <span class="feito"><b>✓</b> Dados e pagamento</span><i></i>
+      <span class="atual"><b>3</b> Confirmação</span>
+    </div>
+    <section class="confirmacao" id="resumo-encomenda"></section>
+  </main>
+
+  <footer class="rodape">
+    <div class="contentor">
+      <span>Loja Morabeza · Projeto de demonstração do workshop de E-commerce · UNICV</span>
+      <span>Fotografias: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></span>
+    </div>
+  </footer>
+
+  <script src="js/produtos.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

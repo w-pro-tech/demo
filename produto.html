@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produto · Loja Morabeza</title>
+  <link rel="icon" href="assets/img/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="barra-info">Entrega grátis na Praia em compras a partir de 5000 CVE</div>
+  <header class="cabecalho">
+    <div class="contentor">
+      <a class="logotipo" href="index.html"><img src="assets/img/logo.svg" alt="">Morabeza</a>
+      <nav class="nav">
+        <a href="index.html#produtos">Produtos</a>
+        <a class="link-carrinho" href="carrinho.html">Carrinho <span id="contador-carrinho" hidden>0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Detalhe do produto (preenchido pelo app.js a partir do ?id= no endereço) -->
+  <main class="contentor" id="detalhe-produto"></main>
+
+  <footer class="rodape">
+    <div class="contentor">
+      <span>Loja Morabeza · Projeto de demonstração do workshop de E-commerce · UNICV</span>
+      <span>Fotografias: <a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></span>
+    </div>
+  </footer>
+  <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+  <script src="js/produtos.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
