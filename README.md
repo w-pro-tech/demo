@@ -56,6 +56,8 @@ loja-demo/
   - validação de cada campo ao sair dele, com o erro a desaparecer logo que fica certo;
   - opções em cartões fáceis de tocar;
   - morada pedida só quando é precisa.
+- **Favoritos:** coração em cada produto e filtro "♥ Favoritos" no catálogo (guardado no `localStorage`).
+- **Cupões de desconto:** campo no carrinho. Códigos de teste: `MORABEZA10` (10%) e `PRAIA5` (5%). O desconto aparece também no checkout.
 - **Imagens:** se uma fotografia não carregar, aparece um bloco com a cor do produto e a inicial, e o layout não se estraga.
 
 ## Como abrir

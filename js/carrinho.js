@@ -54,6 +54,7 @@ function removerDoCarrinho(id) {
 // Esvazia o carrinho (usado depois de confirmar a encomenda)
 function limparCarrinho() {
   guardarCarrinho([]);
+  removerCupao();
 }
 
 // Junta os dados do produto a cada item do carrinho
@@ -75,6 +76,58 @@ function calcularSubtotal() {
 function calcularEntrega(subtotal, metodo = "domicilio") {
   if (metodo === "loja") return 0;
   return subtotal >= ENTREGA_GRATIS_DESDE ? 0 : CUSTO_ENTREGA;
+}
+
+/* ---------- Cupões de desconto ---------- */
+
+const CHAVE_CUPAO = "morabeza_cupao";
+const CUPOES = { MORABEZA10: 10, PRAIA5: 5 }; // código → % de desconto
+
+// Aplica um cupão; devolve true se o código existir
+function aplicarCupao(codigo) {
+  const c = codigo.trim().toUpperCase();
+  if (!CUPOES[c]) return false;
+  localStorage.setItem(CHAVE_CUPAO, c);
+  return true;
+}
+
+function removerCupao() {
+  localStorage.removeItem(CHAVE_CUPAO);
+}
+
+// Cupão ativo ({ codigo, percentagem }) ou null
+function cupaoAtivo() {
+  const codigo = localStorage.getItem(CHAVE_CUPAO);
+  return codigo && CUPOES[codigo] ? { codigo, percentagem: CUPOES[codigo] } : null;
+}
+
+// Valor descontado sobre o subtotal
+function calcularDesconto(subtotal) {
+  const cupao = cupaoAtivo();
+  return cupao ? Math.round((subtotal * cupao.percentagem) / 100) : 0;
+}
+
+/* ---------- Favoritos ---------- */
+
+const CHAVE_FAVORITOS = "morabeza_favoritos";
+
+function obterFavoritos() {
+  return JSON.parse(localStorage.getItem(CHAVE_FAVORITOS) || "[]");
+}
+
+function eFavorito(id) {
+  return obterFavoritos().includes(id);
+}
+
+// Liga/desliga um favorito; devolve true se ficou favorito
+function alternarFavorito(id) {
+  const favoritos = obterFavoritos();
+  const existe = favoritos.includes(id);
+  localStorage.setItem(
+    CHAVE_FAVORITOS,
+    JSON.stringify(existe ? favoritos.filter((f) => f !== id) : [...favoritos, id])
+  );
+  return !existe;
 }
 
 // Número total de unidades (para o contador do cabeçalho)

@@ -29,6 +29,13 @@ function etiqueta(p) {
   return p.etiqueta ? `<span class="etiqueta">${p.etiqueta}</span>` : "";
 }
 
+// Coração para guardar/retirar dos favoritos
+function botaoFavorito(id) {
+  const ativo = eFavorito(id);
+  return `<button type="button" class="favorito ${ativo ? "ativo" : ""}" data-favorito="${id}"
+    aria-pressed="${ativo}" aria-label="${ativo ? "Retirar dos favoritos" : "Guardar nos favoritos"}">${ativo ? "♥" : "♡"}</button>`;
+}
+
 // Cartão de produto usado no catálogo e nas sugestões
 function cartaoProduto(p) {
   return `
@@ -37,6 +44,7 @@ function cartaoProduto(p) {
         ${imagemProduto(p)}
         ${etiqueta(p)}
       </a>
+      ${botaoFavorito(p.id)}
       <div class="cartao-info">
         <p class="categoria">${p.categoria}</p>
         <h3><a href="produto.html?id=${p.id}">${p.nome}</a></h3>
@@ -60,6 +68,22 @@ function mostrarAviso(texto) {
 
 // Qualquer botão com data-adicionar, em qualquer página, adiciona ao carrinho
 document.addEventListener("click", (e) => {
+  const fav = e.target.closest("[data-favorito]");
+  if (fav) {
+    const id = Number(fav.dataset.favorito);
+    const ativo = alternarFavorito(id);
+    document.querySelectorAll(`[data-favorito="${id}"]`).forEach((b) => {
+      b.classList.toggle("ativo", ativo);
+      b.setAttribute("aria-pressed", ativo);
+      b.setAttribute("aria-label", ativo ? "Retirar dos favoritos" : "Guardar nos favoritos");
+      b.textContent = ativo ? "♥" : "♡";
+    });
+    // No filtro "Favoritos", o cartão desaparece ao retirar
+    const filtroAtivo = document.querySelector("#filtros .filtro.ativo");
+    if (filtroAtivo && filtroAtivo.dataset.categoria === FILTRO_FAVORITOS) filtroAtivo.click();
+    return;
+  }
+
   const botao = e.target.closest("[data-adicionar]");
   if (!botao) return;
   const produto = PRODUTOS.find((p) => p.id === Number(botao.dataset.adicionar));
@@ -69,17 +93,19 @@ document.addEventListener("click", (e) => {
 
 /* ---------- Página inicial (index.html) ---------- */
 
+const FILTRO_FAVORITOS = "Favoritos";
+
 function iniciarCatalogo() {
   const filtros = document.querySelector("#filtros");
   const pesquisa = document.querySelector("#pesquisa");
   const ordem = document.querySelector("#ordem");
-  const categorias = ["Todos", ...new Set(PRODUTOS.map((p) => p.categoria))];
+  const categorias = ["Todos", ...new Set(PRODUTOS.map((p) => p.categoria)), FILTRO_FAVORITOS];
 
   // Estado atual dos filtros
   const estado = { categoria: "Todos", texto: "", ordem: "destaque" };
 
   filtros.innerHTML = categorias
-    .map((c) => `<button class="filtro ${c === "Todos" ? "ativo" : ""}" data-categoria="${c}">${c}</button>`)
+    .map((c) => `<button class="filtro ${c === "Todos" ? "ativo" : ""}" data-categoria="${c}">${c === FILTRO_FAVORITOS ? "♥ " : ""}${c}</button>`)
     .join("");
 
   filtros.addEventListener("click", (e) => {
@@ -111,7 +137,8 @@ function desenharProdutos(estado) {
   // 1. Filtrar por categoria e texto
   let produtos = PRODUTOS.filter(
     (p) =>
-      (estado.categoria === "Todos" || p.categoria === estado.categoria) &&
+      (estado.categoria === "Todos" ||
+        (estado.categoria === FILTRO_FAVORITOS ? eFavorito(p.id) : p.categoria === estado.categoria)) &&
       p.nome.toLowerCase().includes(estado.texto)
   );
 
@@ -123,7 +150,7 @@ function desenharProdutos(estado) {
 
   lista.innerHTML = produtos.length
     ? produtos.map(cartaoProduto).join("")
-    : `<div class="vazio"><p class="vazio-titulo">Nenhum produto encontrado</p><p>Experimenta outra palavra ou categoria.</p></div>`;
+    : `<div class="vazio"><p class="vazio-titulo">Nenhum produto encontrado</p><p>${estado.categoria === FILTRO_FAVORITOS ? "Toca no ♡ de um produto para o guardar aqui." : "Experimenta outra palavra ou categoria."}</p></div>`;
 }
 
 /* ---------- Produto (produto.html?id=1) ---------- */
@@ -159,6 +186,7 @@ function mostrarProduto() {
             <button type="button" id="mais" aria-label="Aumentar">+</button>
           </div>
           <button class="botao" id="btn-adicionar">Adicionar ao carrinho</button>
+          ${botaoFavorito(produto.id)}
         </div>
 
         <ul class="garantias">
@@ -228,6 +256,8 @@ function mostrarCarrinho() {
 
   const subtotal = calcularSubtotal();
   const entrega = calcularEntrega(subtotal);
+  const desconto = calcularDesconto(subtotal);
+  const cupao = cupaoAtivo();
   const falta = ENTREGA_GRATIS_DESDE - subtotal;
   const progresso = Math.min(100, (subtotal / ENTREGA_GRATIS_DESDE) * 100);
 
@@ -239,10 +269,31 @@ function mostrarCarrinho() {
       <div class="barra"><span style="width:${progresso}%"></span></div>
     </div>
     <p class="linha-resumo"><span>Subtotal</span><span>${formatarPreco(subtotal)}</span></p>
+    ${desconto ? `<p class="linha-resumo desconto"><span>Cupão ${cupao.codigo} (−${cupao.percentagem}%)</span><span>−${formatarPreco(desconto)}</span></p>` : ""}
     <p class="linha-resumo"><span>Entrega</span><span>${formatarPreco(entrega)}</span></p>
-    <p class="linha-resumo total"><span>Total</span><span>${formatarPreco(subtotal + entrega)}</span></p>
+    <p class="linha-resumo total"><span>Total</span><span>${formatarPreco(subtotal - desconto + entrega)}</span></p>
+    <form class="form-cupao" id="form-cupao">
+      ${
+        cupao
+          ? `<span>Cupão <strong>${cupao.codigo}</strong> aplicado</span><button type="button" class="remover" id="tirar-cupao">Remover</button>`
+          : `<input type="text" id="codigo-cupao" placeholder="Código de desconto" aria-label="Código de desconto" autocomplete="off">
+             <button class="botao pequeno" type="submit">Aplicar</button>`
+      }
+    </form>
+    <p class="erro" id="erro-cupao" role="alert"></p>
     <a class="botao largo" href="checkout.html">Finalizar compra</a>
     <a class="link-secundario" href="index.html">← Continuar a comprar</a>`;
+
+  // Cupão de desconto
+  document.querySelector("#form-cupao").onsubmit = (e) => {
+    e.preventDefault();
+    const campo = document.querySelector("#codigo-cupao");
+    if (!campo) return;
+    if (aplicarCupao(campo.value)) mostrarCarrinho();
+    else document.querySelector("#erro-cupao").textContent = "Código inválido. Experimenta MORABEZA10.";
+  };
+  const tirar = document.querySelector("#tirar-cupao");
+  if (tirar) tirar.onclick = () => { removerCupao(); mostrarCarrinho(); };
 
   // Botões +, − e Remover
   lista.onclick = (e) => {
@@ -275,6 +326,7 @@ function iniciarCheckout() {
   const desenharResumo = () => {
     const subtotal = calcularSubtotal();
     const entrega = calcularEntrega(subtotal, form.entrega.value);
+    const desconto = calcularDesconto(subtotal);
     document.querySelector("#resumo-checkout").innerHTML = `
       <h2>A tua encomenda</h2>
       ${itens
@@ -288,9 +340,10 @@ function iniciarCheckout() {
         )
         .join("")}
       <p class="linha-resumo"><span>Subtotal</span><span>${formatarPreco(subtotal)}</span></p>
+      ${desconto ? `<p class="linha-resumo desconto"><span>Cupão ${cupaoAtivo().codigo}</span><span>−${formatarPreco(desconto)}</span></p>` : ""}
       <p class="linha-resumo"><span>Entrega</span><span>${formatarPreco(entrega)}</span></p>
-      <p class="linha-resumo total"><span>Total</span><span>${formatarPreco(subtotal + entrega)}</span></p>`;
-    return subtotal + entrega;
+      <p class="linha-resumo total"><span>Total</span><span>${formatarPreco(subtotal - desconto + entrega)}</span></p>`;
+    return subtotal - desconto + entrega;
   };
 
   desenharResumo();
@@ -384,3 +437,6 @@ function mostrarConfirmacao() {
     </div>
     <a class="botao largo" href="index.html">Continuar a comprar</a>`;
 }
+
+
+console.log('Oi tudo bom')
